@@ -52,6 +52,7 @@ export default class extends React.Component {
 
   constructor (props) {
     super(props)
+    this._timer = null;
     // propsとしてもつものとそうでないものを分ける・・？
     this.state = {
       isLoading: false,
@@ -62,12 +63,13 @@ export default class extends React.Component {
       peerCount: props.peerCount,
       price: 0,
       blockInfo: props.blockInfo,
-      balance: props.balance
+      balance: props.balance,
+      autoRefresh: false,
     }
   }
 
   async refresh(e){
-    e.preventDefault();
+    e && e.preventDefault();
     await new Promise((resolve, reject) => {
       this.setState({
         isLoading: true
@@ -134,6 +136,26 @@ export default class extends React.Component {
     })
   }
 
+  toggleAutoRefresh(e) {
+    e.preventDefault();
+    this.setState({
+      autoRefresh: !this.state.autoRefresh
+    }, () => {
+      if(this.state.autoRefresh){
+        this.refresh();
+        this._timer = setInterval(this.refresh.bind(this), 2000);
+      } else {
+        if(this._timer){
+          clearTimeout(this._timer);
+          this._timer = null;
+        }
+      }
+    });
+
+
+
+  }
+
   render() {
     const {
       coinbase,
@@ -144,7 +166,8 @@ export default class extends React.Component {
       balance,
       blockInfo,
       blockNumber,
-      isLoading
+      isLoading,
+      autoRefresh
     } = this.state;
     const {
       network, api, node,
@@ -154,6 +177,8 @@ export default class extends React.Component {
       syncing
     } = this.props;
 
+    const autoRefreshText = autoRefresh ? 'disable auto refresh' : 'enable auto refresh';
+    const autoRefreshText2 = autoRefresh ? 'Running' : '';
     return (
       <div>
         <Head>
@@ -164,7 +189,11 @@ export default class extends React.Component {
         </Head>
         <div className="wrapper">
           <div className="container">
-            <h3>eth<button className="button" href="#" onClick={this.refresh.bind(this)}>refresh</button></h3>
+            <h3><span>eth</span>
+              <button className="button" href="#" onClick={this.refresh.bind(this)}>refresh</button>
+              <button className="button button-outline" href="#" onClick={this.toggleAutoRefresh.bind(this)}>{autoRefreshText}</button>
+              <span className="running">{autoRefreshText2}</span>
+            </h3>
             <div className="row">
                <div className="column">coinbase</div>
                <div className="column column-75">{coinbase}</div>

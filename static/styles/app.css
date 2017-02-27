@@ -18,5 +18,18 @@
   line-height: 2.8rem;
   padding: 0 1.5rem;
   vertical-align: middle;
-      margin-left: 20px;
+  margin-left: 20px;
+}
+
+.running {
+  height: 2.8rem;
+  line-height: 2.8rem;
+  padding: 0 1.5rem;
+  vertical-align: middle;
+  font-size: 1.1rem;
+  letter-spacing: .1rem;
+  display: inline-block;
+  margin-bottom: 1.0rem;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
